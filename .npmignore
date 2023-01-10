@@ -3,3 +3,5 @@ gulpfile.js
 .prettierrc
 src
 tsconfig.json
+readme.md
+banner.png

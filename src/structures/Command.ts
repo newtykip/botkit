@@ -7,6 +7,7 @@ import {
     ContextMenuCommand,
     PieceContext
 } from '@sapphire/framework';
+import { SlashCommandBuilder, ContextMenuCommandBuilder } from 'discord.js';
 import title from 'title';
 import Client from './Client';
 import Logger from './Logger';
@@ -25,6 +26,21 @@ abstract class Command extends SapphireCommand {
     }
 
     abstract registerApplicationCommands(registry: Command.Registry): Awaitable<void>;
+
+    /**
+     * Sets the name and description on the inputted builder.
+     * 
+     * For use with registerApplicationCommands.
+     */
+    public builderDefaults(builder: SlashCommandBuilder | ContextMenuCommandBuilder) {
+        if (builder instanceof SlashCommandBuilder) {
+            builder = builder
+                .setDescription(this.description);
+        }
+
+        return builder
+            .setName(this.name);
+    }
 
     public onLoad() {
         this.logger.loader(`Successfully loaded command ${title(this.name)}!`);
