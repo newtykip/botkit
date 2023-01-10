@@ -16,12 +16,20 @@ const glyphNames: {
     loader: 'nodejs'
 };
 
+namespace Logger {
+    export namespace Table {
+        export type Row<T> = {
+            [key: string]: T;
+        } & { colour: string };
+    }
+}
+
 export default class Logger {
     private client: Client;
     private scope: string;
     public placeholder = '<<>>';
 
-    constructor(client: Client, scope = 'Ayano') {
+    constructor(client: Client, scope: string) {
         this.client = client;
         this.scope = scope.toLowerCase();
     }
@@ -35,7 +43,7 @@ export default class Logger {
             await Bluebird.map(userMentions, async mention => {
                 // Select the ID and find the relevant user
                 const id = mention.replace(/[^0-9]/g, '');
-                const user = await this.client.sapphire.users.fetch(id);
+                const user = await this.client.users.fetch(id);
 
                 message = message.replace(mention, `User "${user.tag}" (${user.id})`);
             });
@@ -46,7 +54,7 @@ export default class Logger {
             await Bluebird.map(channelMentions, async mention => {
                 // Select the ID and find the relevant channel
                 const id = mention.replace(/[^0-9]/g, '');
-                const channel = await this.client.sapphire.channels.fetch(id, {
+                const channel = await this.client.channels.fetch(id, {
                     allowUnknownGuild: true
                 });
 
@@ -115,13 +123,5 @@ export default class Logger {
         });
 
         table.printTable();
-    }
-}
-
-namespace Logger {
-    export namespace Table {
-        export type Row<T> = {
-            [key: string]: T;
-        } & { colour: string };
     }
 }

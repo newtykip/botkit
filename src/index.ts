@@ -1,3 +1,3 @@
-import Client from './Client';
+import Client from './structures/Client';
 
 export { Client };

@@ -10,17 +10,20 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@sapphire/decorators": "^6.0.0",
     "@sapphire/framework": "^4.0.0",
     "bluebird": "^3.7.2",
     "console-table-printer": "^2.11.1",
     "dayjs": "^1.11.7",
     "discord.js": "^14.7.1",
     "figures": "3.2.0",
-    "picocolors": "^1.0.0"
+    "picocolors": "^1.0.0",
+    "title": "^3.5.3"
   },
   "devDependencies": {
     "@types/bluebird": "^3.5.38",
     "@types/node": "^18.11.18",
+    "@types/title": "^3.4.1",
     "typescript": "^4.9.4"
   }
 }
