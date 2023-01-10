@@ -60,7 +60,7 @@ namespace Listener {
 	export const Config = (options: Options) => ApplyOptions<Options>(options);
 	export const Events = SapphireEvents;
 
-	export type Options = ListenerOptions & {
+	export interface Options extends ListenerOptions {
 		name: string;
 		event: typeof Events[keyof typeof Events];
 		productionOnly?: boolean;
