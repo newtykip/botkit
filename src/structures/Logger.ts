@@ -16,14 +16,6 @@ const glyphNames: {
     loader: 'nodejs'
 };
 
-namespace Logger {
-    export namespace Table {
-        export type Row<T> = {
-            [key: string]: T;
-        } & { colour: string };
-    }
-}
-
 export default class Logger {
     private client: Client;
     private scope: string;
@@ -123,5 +115,13 @@ export default class Logger {
         });
 
         table.printTable();
+    }
+}
+
+namespace Logger {
+    export namespace Table {
+        export type Row<T> = {
+            [key: string]: T;
+        } & { colour: string };
     }
 }

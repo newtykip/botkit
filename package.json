@@ -2,9 +2,9 @@
   "name": "@newtykins/botkit",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "gulp build"
   },
   "keywords": [],
   "author": "",
@@ -22,8 +22,16 @@
   },
   "devDependencies": {
     "@types/bluebird": "^3.5.38",
+    "@types/gulp": "^4.0.10",
+    "@types/gulp-uglify": "^3.0.7",
     "@types/node": "^18.11.18",
     "@types/title": "^3.4.1",
-    "typescript": "^4.9.4"
+    "gulp": "^4.0.2",
+    "gulp-cli": "^2.3.0",
+    "gulp-typescript": "6.0.0-alpha.1",
+    "gulp-uglify": "^3.0.2",
+    "prettier": "^2.8.2",
+    "typescript": "^4.9.4",
+    "uglify-js": "^3.17.4"
   }
 }

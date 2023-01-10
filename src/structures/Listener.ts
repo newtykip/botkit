@@ -16,7 +16,7 @@ abstract class Listener<E extends keyof ClientEvents> extends SapphireListener<E
 
 	constructor(context: PieceContext, options: Listener.Options) {
 		// Configure the listener
-		const { name, event, productionOnly, ...listenerOptions } = options;
+		const { name, productionOnly, ...listenerOptions } = options;
 		super(context, listenerOptions);
 
 		// Expose the client and logger
@@ -35,9 +35,9 @@ abstract class Listener<E extends keyof ClientEvents> extends SapphireListener<E
                 this.unload();
 
                 this.logger.loader(
-                    `Forcefully unloaded ${title(
+                    `Forcefully unloaded listener ${title(
                         this.name
-                    )} - it should only be run in production environments!`
+                    )} - it is production only!`
                 );
             }, 1000);
         } else {
