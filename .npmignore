@@ -1,0 +1,5 @@
+gulpfile.js
+.vscode
+.prettierrc
+src
+tsconfig.json

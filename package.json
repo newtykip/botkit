@@ -1,14 +1,18 @@
 {
   "name": "@newtykins/botkit",
   "version": "1.0.0",
-  "description": "",
+  "description": "Opinionated toolkit for making Discord bots with Sapphire.",
   "main": "./lib/index.js",
   "scripts": {
     "build": "gulp build"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "discord",
+    "bot",
+    "chatbot"
+  ],
+  "author": "newtykins",
+  "license": "OQL",
   "dependencies": {
     "@sapphire/decorators": "^6.0.0",
     "@sapphire/framework": "^4.0.0",
