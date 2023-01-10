@@ -17,19 +17,7 @@ abstract class Command extends SapphireCommand {
 		this.logger = new Logger(this.client, this.name);
 	}
 
-	abstract chatInputRun(
-        interaction: Command.Chat.Interaction,
-        context: Command.Chat.Context
-    ): Awaitable<unknown>;
-
-	abstract contextMenuRun(
-		interaction: Command.Menu.Interaction,
-		context: Command.Menu.Context
-	): Awaitable<unknown>;
-
-	abstract autocompleteRun(
-		interaction: Command.Autocomplete
-	): Awaitable<unknown>;
+	abstract registerApplicationCommands(registry: Command.Registry): Awaitable<void>;
 
 	public onLoad() {
 		this.logger.loader(`Successfully loaded command ${title(this.name)}!`);

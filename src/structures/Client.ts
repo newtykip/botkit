@@ -5,7 +5,7 @@ export default class Client extends SapphireClient {
 	readonly production = process.env.NODE_ENV === 'production';
 	readonly silent: boolean;
 
-	constructor(options?: Client.Options) {
+	constructor(token: string, options?: Client.Options) {
 		// Configure the client
 		const { silent, ...clientOptions } = options || {
 			intents: ['Guilds']
@@ -13,7 +13,12 @@ export default class Client extends SapphireClient {
 
 		super(clientOptions);
 
+		this.token = token;
 		this.silent = silent || false;
+	}
+
+	login(): Promise<string> {
+		return super.login(this.token as string);
 	}
 }
 
