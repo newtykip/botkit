@@ -6,42 +6,49 @@ import Client from './Client';
 import { Table } from 'console-table-printer';
 import figures from 'figures';
 import { Colors } from 'picocolors/types';
-import { Logger as BuiltInLogger, LogLevel } from '@sapphire/framework';
+import { Logger as SapphireLogger, LogLevel as SapphireLogLevel } from '@sapphire/framework';
+
+enum CustomLogLevels {
+    Loader = 70
+}
 
 const glyphNames: {
-    [key in LogLevel]: keyof typeof figures;
+    [key in keyof typeof Logger.LogLevel]: keyof typeof figures;
 } = {
-    10: 'info',
-    20: 'warning',
-    30: 'info',
-    40: 'warning',
-    50: 'cross',
-    60: 'cross',
-    70: 'nodejs',
-    100: 'info'
+    Info: 'info',
+    Debug: 'star',
+    Warn: 'warning',
+    Error: 'cross',
+    Fatal: 'cross',
+    Loader: 'nodejs',
+    Trace: 'ellipsis',
+    None: 'info'
 };
 
 const colourList: {
-    [key in LogLevel]: keyof Pick<Colors, Exclude<keyof Colors, 'isColorSupported'>>;
+    [key in keyof typeof Logger.LogLevel]: keyof Pick<
+        Colors,
+        Exclude<keyof Colors, 'isColorSupported'>
+    >;
 } = {
-    10: 'cyan',
-    20: 'yellow',
-    30: 'cyan',
-    40: 'green',
-    50: 'red',
-    60: 'red',
-    70: 'green',
-    100: 'white'
+    Info: 'cyan',
+    Debug: 'gray',
+    Warn: 'yellow',
+    Error: 'red',
+    Fatal: 'red',
+    Loader: 'green',
+    Trace: 'white',
+    None: 'white'
 };
 
 // todo: placeholder system?
 
-export class BaseLogger extends BuiltInLogger {
+export class BaseLogger extends SapphireLogger {
     private client: Client;
     private scope: string;
 
     constructor(client: Client, scope?: string) {
-        super(LogLevel.Info);
+        super(Logger.LogLevel.Info);
 
         this.client = client;
         this.scope = scope?.toLowerCase() ?? 'global';
@@ -78,17 +85,21 @@ export class BaseLogger extends BuiltInLogger {
         return message;
     }
 
-    public write(level: LogLevel, ...values: readonly unknown[]) {
-        const glyph = figures[glyphNames[level]] ?? '';
+    public write(level: SapphireLogLevel, ...values: readonly unknown[]) {
+        // @ts-ignore
+        const glyph = figures?.[glyphNames?.[Logger.LogLevel?.[level]]] ?? '';
         const timestamp = dayjs().format('hh:mm:ss A').toUpperCase();
 
         this.parseMessage(values.join(' ')).then(message =>
             console.log(
+                // @ts-ignore
                 `${colours.gray(`[${timestamp}] [${this.scope}] ›`)} ${colours[
-                    colourList[level] ?? 'white'
+                    // @ts-ignore
+                    colourList?.[Logger.LogLevel?.[level]] ?? 'white'
                 ](
                     `${glyph}  ${colours.underline(
-                        colours.bold(LogLevel[level]?.toLowerCase() ?? 'unknown')
+                        // @ts-ignore
+                        colours.bold(Logger.LogLevel?.[level]?.toLowerCase() ?? 'unknown')
                     )}`
                 )}  ${message}`
             )
@@ -120,7 +131,7 @@ export class PieceLogger extends BaseLogger {
      * @param values The values to log.
      */
     public loader(...values: readonly unknown[]) {
-        this.write(LogLevel.Loader, ...values);
+        this.write(Logger.LogLevel.Loader as any, ...values);
     }
 }
 
@@ -130,4 +141,9 @@ export namespace Logger {
             [key: string]: T;
         } & { colour: string };
     }
+
+    export const LogLevel = {
+        ...SapphireLogLevel,
+        ...CustomLogLevels
+    };
 }
