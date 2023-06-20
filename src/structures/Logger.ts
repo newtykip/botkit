@@ -84,8 +84,12 @@ export class BaseLogger extends BuiltInLogger {
 
         this.parseMessage(values.join(' ')).then(message =>
             console.log(
-                `${colours.gray(`[${timestamp}] [${this.scope}] ›`)} ${colours[colourList[level]](
-                    `${glyph}  ${colours.underline(colours.bold(LogLevel[level].toLowerCase()))}`
+                `${colours.gray(`[${timestamp}] [${this.scope}] ›`)} ${colours[
+                    colourList[level] ?? 'white'
+                ](
+                    `${glyph}  ${colours.underline(
+                        colours.bold(LogLevel[level]?.toLowerCase() ?? 'unknown')
+                    )}`
                 )}  ${message}`
             )
         );
