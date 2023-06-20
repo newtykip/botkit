@@ -10,11 +10,11 @@ import {
 import { SlashCommandBuilder, ContextMenuCommandBuilder } from 'discord.js';
 import title from 'title';
 import Client from './Client';
-import Logger from './Logger';
+import { PieceLogger } from './Logger';
 
 abstract class Command extends SapphireCommand {
     public client: Client;
-    public logger: Logger;
+    public logger: PieceLogger;
 
     constructor(context: PieceContext, options?: Command.Options) {
         const { ...commandOptions } = options;
@@ -22,24 +22,22 @@ abstract class Command extends SapphireCommand {
 
         // Expose the client and logger for usage!
         this.client = this.container.client;
-        this.logger = new Logger(this.client, this.name);
+        this.logger = new PieceLogger(this.client, this.name);
     }
 
     abstract registerApplicationCommands(registry: Command.Registry): Awaitable<void>;
 
     /**
      * Sets the name and description on the inputted builder.
-     * 
+     *
      * For use with registerApplicationCommands.
      */
     public builderDefaults(builder: SlashCommandBuilder | ContextMenuCommandBuilder) {
         if (builder instanceof SlashCommandBuilder) {
-            builder = builder
-                .setDescription(this.description);
+            builder = builder.setDescription(this.description);
         }
 
-        return builder
-            .setName(this.name);
+        return builder.setName(this.name);
     }
 
     public onLoad() {

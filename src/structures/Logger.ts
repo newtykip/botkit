@@ -1,32 +1,53 @@
 import colours from 'picocolors';
 import dayjs from 'dayjs';
-import { Guild, MessageMentions } from 'discord.js';
+import { MessageMentions } from 'discord.js';
 import Bluebird from 'bluebird';
 import Client from './Client';
 import { Table } from 'console-table-printer';
 import figures from 'figures';
 import { Colors } from 'picocolors/types';
+import { Logger as BuiltInLogger, LogLevel } from '@sapphire/framework';
 
 const glyphNames: {
-    [key: string]: keyof typeof figures;
+    [key in LogLevel]: keyof typeof figures;
 } = {
-    info: 'info',
-    warn: 'warning',
-    error: 'cross',
-    loader: 'nodejs'
+    10: 'info',
+    20: 'warning',
+    30: 'info',
+    40: 'warning',
+    50: 'cross',
+    60: 'cross',
+    70: 'nodejs',
+    100: 'info'
 };
 
-export default class Logger {
+const colourList: {
+    [key in LogLevel]: keyof Pick<Colors, Exclude<keyof Colors, 'isColorSupported'>>;
+} = {
+    10: 'cyan',
+    20: 'yellow',
+    30: 'cyan',
+    40: 'green',
+    50: 'red',
+    60: 'red',
+    70: 'green',
+    100: 'white'
+};
+
+// todo: placeholder system?
+
+export class BaseLogger extends BuiltInLogger {
     private client: Client;
     private scope: string;
-    public placeholder = '<<>>';
 
-    constructor(client: Client, scope: string) {
+    constructor(client: Client, scope?: string) {
+        super(LogLevel.Info);
+
         this.client = client;
-        this.scope = scope.toLowerCase();
+        this.scope = scope?.toLowerCase() ?? 'global';
     }
 
-    private async parseMessage(message: string, placeholders: any[]) {
+    private async parseMessage(message: string): Promise<string> {
         const userMentions = message.match(MessageMentions.UsersPattern) || [];
         const channelMentions = message.match(MessageMentions.ChannelsPattern) || [];
 
@@ -54,59 +75,32 @@ export default class Logger {
             });
         }
 
-        // Replace placeholders
-        await Bluebird.each(placeholders, placeholder => {
-            // If a guild was inputted, format it into text
-            if (placeholder instanceof Guild) {
-                message = message.replace(
-                    this.placeholder,
-                    `Guild "${placeholder.name}" (${placeholder.id})`
-                );
-            }
-        });
-
         return message;
     }
 
-    private log(
-        level: keyof typeof glyphNames,
-        colour: keyof Pick<Colors, Exclude<keyof Colors, 'isColorSupported'>>,
-        message: string,
-        placeholders: any[]
-    ) {
+    public write(level: LogLevel, ...values: readonly unknown[]) {
         const glyph = figures[glyphNames[level]] ?? '';
         const timestamp = dayjs().format('hh:mm:ss A').toUpperCase();
 
-        this.parseMessage(message, placeholders).then(parsedMessage =>
+        this.parseMessage(values.join(' ')).then(message =>
             console.log(
-                `${colours.gray(`[${timestamp}] [${this.scope}] ›`)} ${colours[colour](
-                    `${glyph}  ${colours.underline(colours.bold(level))}`
-                )}   ${parsedMessage}`
+                `${colours.gray(`[${timestamp}] [${this.scope}] ›`)} ${colours[colourList[level]](
+                    `${glyph}  ${colours.underline(colours.bold(LogLevel[level].toLowerCase()))}`
+                )}  ${message}`
             )
         );
     }
+}
 
-    public info(message: string, ...placeholders: any[]) {
-        this.log('info', 'cyan', message, placeholders);
+export class PieceLogger extends BaseLogger {
+    constructor(client: Client, scope: string) {
+        super(client, scope);
     }
 
-    public loader(message: string, ...placeholders: any[]) {
-        if (!this.client.silent) this.log('loader', 'green', message, placeholders);
-    }
-
-    public warn(message: string, ...placeholders: any[]) {
-        if (!this.client.silent) this.log('warn', 'yellow', message, placeholders);
-    }
-
-    public error(message: string | Error, ...placeholders: any[]) {
-        this.log(
-            'error',
-            'red',
-            message instanceof Error ? message.message : message,
-            placeholders
-        );
-    }
-
+    /**
+     * Wrtites a table of values to the console.
+     * @param rows The rows to log.
+     */
     public table<T>(rows: Logger.Table.Row<T>[]) {
         const table = new Table();
 
@@ -116,9 +110,17 @@ export default class Logger {
 
         table.printTable();
     }
+
+    /**
+     * Alias of ILogger.write with LogLevel.Loader as level.
+     * @param values The values to log.
+     */
+    public loader(...values: readonly unknown[]) {
+        this.write(LogLevel.Loader, ...values);
+    }
 }
 
-namespace Logger {
+export namespace Logger {
     export namespace Table {
         export type Row<T> = {
             [key: string]: T;

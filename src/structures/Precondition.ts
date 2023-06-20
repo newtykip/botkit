@@ -6,11 +6,11 @@ import {
 } from '@sapphire/framework';
 import title from 'title';
 import Client from './Client';
-import Logger from './Logger';
+import { PieceLogger } from './Logger';
 
 abstract class Precondition extends SapphirePrecondition {
     public client: Client;
-    public logger: Logger;
+    public logger: PieceLogger;
     private productionOnly: boolean;
 
     private get shouldRun(): boolean {
@@ -23,7 +23,7 @@ abstract class Precondition extends SapphirePrecondition {
 
         // Expose the client and logger for usage!
         this.client = this.container.client;
-        this.logger = new Logger(this.client, this.name);
+        this.logger = new PieceLogger(this.client, this.name);
 
         this.productionOnly = productionOnly || false;
     }
