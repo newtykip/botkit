@@ -1,6 +1,6 @@
 {
   "name": "@newtykins/botkit",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Make bots with Sapphire just that bit easier.",
   "main": "./lib/index.js",
   "scripts": {
